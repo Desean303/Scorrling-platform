@@ -1,0 +1,130 @@
+import pygame
+pygame.init()
+screen = pygame.display.set_mode((800, 600)) 
+pygame.display.set_caption('Side-Scrolling Game')
+clock = pygame.time.Clock()
+
+img = pygame.image.load("forest.jpg").convert()
+
+#globals
+player = [100, 450, 0, 0]
+platforms = [(500,400), (700, 300),(100,600),(325,440)]
+
+
+
+
+isOnGround = False
+offset = 0
+
+def move_player():
+    global isOnGround
+    global offset
+    isOnGround = False
+    
+    if player[1]>520 - 50:
+        player[1] = 520 - 50
+        isOnGround = True
+        
+#platforms collision
+    for i in range(len(platforms)):
+        if player[0]+50>platforms[i][0]+offset and player[0]<platforms[i][0]+100+offset and player[1]+50>platforms[i][1] and player[1]+50< platforms[i][1]+50:
+            isOnGround = True #stop gravity
+            player[1]=platforms[i][1]-50 #reset players feet
+            player[3] = 0 #stop downard velocity
+            #print("on platforms") #for testing
+        
+        
+        
+    if keys[pygame.K_LEFT]:
+      if offset > 260 and player[0]>0: #check if you're on the far right left edge of the map
+          player[2] = -5 #let player approach side of game screen
+          
+      elif player[0]>400 and offset < -1500: #check if we're on the far right edge of the map
+          player[2] = -5 #let player approach side of game screen
+            
+      elif player[0]>0: #if player is recentered, move the *offset*, not the player
+          offset += 5
+          player[2] = 0
+          
+    elif keys[pygame.K_RIGHT]:
+      if offset < -1500 and player[0]<750:  #check if you're on the far right edge of the map
+        player[2] = 5 #let player approach side of game screen
+      
+    
+      elif offset >260 and player[0]<400: #let player approach side of game screen
+           player[2] = 5 #let player approach side of game screen
+         
+      elif player[0]<750:  #if player is recentered, move the *offset*, not the player
+           offset -= 5
+           player[2] = 0      
+      else:
+            player[2]=0 #make sure motion is off (stops from going off edge)
+            
+      
+      
+      
+          
+     
+         
+    if isOnGround == False:
+        player[3] += 1 #let player approach side of game screen
+                        
+    if isOnGround == True and keys[pygame.K_UP]== True:
+        player[3] = -15 #let player approach side of game screen
+        isOnGround = False
+        
+    player[0]+=player[2]
+    player[1]+=player[3]
+
+
+            
+          
+running = True
+def draw_clouds():
+    # Draw clouds in the background
+    for x in range(100, 800, 300):
+        for i in range(3):
+            pygame.draw.circle(screen, (255, 255, 255), (x + offset, 100), 40)
+            pygame.draw.circle(screen, (255, 255, 255), (x - 50 + offset, 125), 40)
+            pygame.draw.circle(screen, (255, 255, 255), (x + 50 + offset, 125), 40)
+        pygame.draw.rect(screen, (255, 255, 255), (x - 50 + offset, 100, 100, 65))
+        
+    # Draw trees in the background
+    for x in range(100, 800, 300):
+        for i in range(3):
+            pygame.draw.circle(screen, (0, 100, 0), (x + offset, 200), 45)
+            pygame.draw.circle(screen, (0, 100, 0), (x - 50 + offset, 250), 45)
+            pygame.draw.circle(screen, (0, 100, 0), (x + 50 + offset, 250), 45)
+        pygame.draw.rect(screen, (100, 65, 55), (x - 10 + offset, 220, 20, 500))
+        
+    
+def draw_platforms():
+        for i in range(len(platforms)):
+            pygame.draw.rect(screen, (150, 10, 10), (platforms[i][0] + offset, platforms[i][1], 100, 30))
+while running: # Main game loop++++++++++++++++
+    
+    clock.tick(60)
+#input section-----------------------
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+            
+            
+    keys = pygame.key.get_pressed()
+     #physics section++++++++++++++++++++++++++++++++++++++++++++++++++
+    move_player()       
+     # Render section++++++++++++++++++++++++++++++++++++++++++++++++++
+     
+    
+            
+    screen.fill((135, 206, 235)) # sky blue background
+    screen.blit(img,(0 + offset/4,0))
+    
+    draw_clouds() #function call
+    draw_platforms()
+    # function call
+    pygame.draw.rect(screen, (0, 126, 0), (0, 520, 800, 85))
+    pygame.draw.rect(screen, (255, 0, 255), (player[0], player[1], 50, 50)) #player
+    pygame.display.flip()
+            
+pygame.quit()
